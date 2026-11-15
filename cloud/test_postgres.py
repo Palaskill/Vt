@@ -79,10 +79,10 @@ class PostgresTests(unittest.TestCase):
         self.assertCountEqual(results, ['ok','NOT_ENOUGH_STOCK'])
 
     def test_http_login_roles_and_sales_with_postgres(self):
-        http = app.ThreadingHTTPServer(('127.0.0.1', 0), cloud.Handler)
-        host = '127.0.0.1:' + str(http.server_port)
+        server = app.ThreadingHTTPServer(('127.0.0.1', 0), cloud.Handler)
+        host = '127.0.0.1:' + str(server.server_port)
         origin = 'http://' + host
-        thread = threading.Thread(target=http.serve_forever, daemon=True)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         def request(path, body=None, cookie=''):
             conn = http.client.HTTPConnection(host, timeout=10)
@@ -121,7 +121,7 @@ class PostgresTests(unittest.TestCase):
                 self.assertEqual(request('user-update', {'id':user['id'],'active':False,'alerts':True}, admin)[0],200)
                 self.assertEqual(request('medicines', cookie=worker)[0],401)
         finally:
-            http.shutdown(); http.server_close(); thread.join()
+            server.shutdown(); server.server_close(); thread.join()
 
 
 if __name__ == '__main__': unittest.main()
