@@ -11,7 +11,7 @@ La version en ligne ne partage pas automatiquement les données avec la version 
 3. Créer un service web Python Render depuis ce dépôt, après les tests réels sur PostgreSQL et vérification de sécurité. Commande de build : `pip install -r cloud/requirements.txt`. Commande de démarrage : `python -m cloud.server`. La sonde de santé est `/healthz`.
 4. Dans l'environnement privé du service, définir :
    - `DATABASE_URL` : la chaîne de connexion PostgreSQL Supabase en mode transaction, port 6543, avec le rôle `vetstock_app.<référence-du-projet>` et son mot de passe provenant de Supabase Vault. Ne pas utiliser le rôle administrateur `postgres` pour l'application.
-   - `VETSTOCK_DATABASE_CA_PATH` : le chemin du certificat CA Supabase disponible sur le serveur. La connexion impose `sslmode=verify-full` pour vérifier le certificat et le nom d'hôte. Voir les paramètres SSL de la base dans Supabase.
+   - `VETSTOCK_DATABASE_CA_PATH` : `cloud/supabase-root-ca.bundle`, certificat racine public fourni par Supabase pour vérifier l'identité du serveur. La connexion impose `sslmode=verify-full`. Vérifier les paramètres SSL de la base si Supabase renouvelle son certificat.
    - `VETSTOCK_ADMIN_USERNAME` et `VETSTOCK_ADMIN_PASSWORD` : les identifiants initiaux, uniquement avant la première création du compte ; mot de passe de 12 caractères minimum.
    - `VETSTOCK_PUBLIC_URL` est facultative sur Render : l'adresse `RENDER_EXTERNAL_URL` est utilisée par défaut. Si un domaine personnalisé est utilisé, définir explicitement son adresse HTTPS.
 5. Après la première connexion réussie, supprimer le mot de passe initial de l'environnement Render et redéployer. Ne jamais envoyer de mots de passe ou de chaîne de connexion dans une discussion ni les enregistrer dans GitHub.
