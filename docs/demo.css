@@ -1,0 +1,6 @@
+.demo-notice{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding:9px 16px;background:#232344;color:#fff;text-align:center;font:600 11px/1.4 system-ui,sans-serif}
+.demo-notice strong{color:#ffe59e;letter-spacing:.05em}
+.demo-notice span{color:#e5e5fb}
+.demo-toast{position:fixed;z-index:100;left:50%;bottom:24px;transform:translateX(-50%);max-width:92vw;padding:12px 16px;border-radius:12px;background:#292a45;color:#fff;box-shadow:0 8px 25px #2224;text-align:center;font:600 12px/1.5 system-ui,sans-serif}
+#password-form{display:none}
+@media(max-width:700px){.demo-notice{font-size:10px;gap:2px 8px;padding:7px 10px}}
