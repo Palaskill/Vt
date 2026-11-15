@@ -8,7 +8,7 @@ Application pour la gestion des médicaments d'un cabinet vétérinaire : stock 
 - **Version en ligne** : utilise Render et une base Supabase dédiée. Elle nécessite Internet et ne se synchronise pas automatiquement avec la base locale. Son installation et ses sauvegardes sont à vérifier avant utilisation réelle ; voir [la documentation cloud](cloud/README.md).
 - **Aperçu** : une démonstration en lecture seule est disponible dans le dossier `docs/`.
 
-Le service Render suit la branche `main` et déclenche un déploiement automatique lorsqu’un commit y est ajouté.
+Le service Render suit la branche `main` et déclenche un déploiement automatique lorsqu’un commit y est ajouté. Les commits des autres branches ne déploient pas ce service.
 
 ## Fonctionnement
 
