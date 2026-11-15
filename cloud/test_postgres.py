@@ -1,5 +1,7 @@
 """Integration checks only against a disposable, local PostgreSQL test database."""
 import datetime as dt
+import http.client
+import json
 import os
 import threading
 import unittest
@@ -75,6 +77,51 @@ class PostgresTests(unittest.TestCase):
         for t in threads: t.start()
         for t in threads: t.join()
         self.assertCountEqual(results, ['ok','NOT_ENOUGH_STOCK'])
+
+    def test_http_login_roles_and_sales_with_postgres(self):
+        http = app.ThreadingHTTPServer(('127.0.0.1', 0), cloud.Handler)
+        host = '127.0.0.1:' + str(http.server_port)
+        origin = 'http://' + host
+        thread = threading.Thread(target=http.serve_forever, daemon=True)
+        thread.start()
+        def request(path, body=None, cookie=''):
+            conn = http.client.HTTPConnection(host, timeout=10)
+            headers = {'Host':host}
+            if body is not None: headers.update({'Content-Type':'application/json','Origin':origin})
+            if cookie: headers['Cookie'] = cookie
+            conn.request('POST' if body is not None else 'GET', '/api/'+path,
+                         json.dumps(body) if body is not None else None, headers)
+            response = conn.getresponse()
+            data = json.loads(response.read())
+            result = (response.status, data, response.getheader('Set-Cookie'))
+            conn.close()
+            return result
+        try:
+            with patch.object(app, 'db', self.db), patch('cloud.server.expected_origin', return_value=origin):
+                status, _, header = request('login', {'username':'PG_TEST','password':'password-test-123'})
+                self.assertEqual(status, 200)
+                admin = header.split(';',1)[0]
+                status, user, _ = request('user', {'username':'pg_worker','display_name':'Worker',
+                    'role':'employee','password':'worker-password','alerts':True}, admin)
+                self.assertEqual(status, 200)
+                status, med, _ = request('medicine', {'name':'HTTP PG','pack_size':20,'price_pack':'10',
+                    'price_unit':'0.6','threshold':2,'threshold_mode':'units','expiry_days':30}, admin)
+                self.assertEqual(status, 200)
+                status, _, header = request('login', {'username':'pg_worker','password':'worker-password'})
+                self.assertEqual(status, 200)
+                worker = header.split(';',1)[0]
+                self.assertEqual(request('users', cookie=worker)[0],403)
+                self.assertEqual(request('receipt', {'medicine_id':med['id'],'batch':'PG-HTTP',
+                    'expiry':(dt.date.today()+dt.timedelta(days=120)).isoformat(),'boxes':1,'loose':0}, worker)[0],200)
+                self.assertEqual(request('sale', {'lines':[{'medicine_id':med['id'],'kind':'unit','qty':3,
+                    'expected_price':600}],'discount':'0','payment':'0','method':'cash'}, worker)[0],200)
+                status, meds, _ = request('medicines', cookie=admin)
+                self.assertEqual(status,200)
+                self.assertEqual(next(m for m in meds if m['id']==med['id'])['total_units'],17)
+                self.assertEqual(request('user-update', {'id':user['id'],'active':False,'alerts':True}, admin)[0],200)
+                self.assertEqual(request('medicines', cookie=worker)[0],401)
+        finally:
+            http.shutdown(); http.server_close(); thread.join()
 
 
 if __name__ == '__main__': unittest.main()
