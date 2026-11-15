@@ -1,0 +1,36 @@
+name: VetStock cloud checks
+on:
+  pull_request:
+    paths: ['cloud/**', 'server.py', 'static/**', '.github/workflows/cloud-checks.yml']
+  push:
+    branches: ['cloud/supabase-render']
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: test-only
+          POSTGRES_DB: vetstock_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      VETSTOCK_TEST_DATABASE_URL: postgresql://postgres:test-only@127.0.0.1:5432/vetstock_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r cloud/requirements.txt
+      - run: python -m unittest discover -s tests -q
+      - run: python -m unittest cloud.test_cloud cloud.test_postgres -v
+      - run: node tests/test_barcode.js
+      - run: node --check cloud/overlay.js
