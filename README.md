@@ -1,6 +1,14 @@
 # VetStock
 
-Application locale pour la gestion des médicaments d'un cabinet vétérinaire : stock par lot, dates de péremption, seuils et alertes, achats, fournisseurs et ventes. L'interface est disponible en français et en arabe.
+Application pour la gestion des médicaments d'un cabinet vétérinaire : stock par lot, dates de péremption, seuils et alertes, achats, fournisseurs et ventes. L'interface est disponible en français et en arabe.
+
+## Versions
+
+- **Version locale Windows** : fonctionne sur le réseau du cabinet et conserve ses données localement.
+- **Version en ligne** : utilise Render et une base Supabase dédiée. Elle nécessite Internet et ne se synchronise pas automatiquement avec la base locale. Son installation et ses sauvegardes sont à vérifier avant utilisation réelle ; voir [la documentation cloud](cloud/README.md).
+- **Aperçu** : une démonstration en lecture seule est disponible dans le dossier `docs/`.
+
+Le service Render suit la branche `main` et déclenche un déploiement automatique lorsqu’un commit y est ajouté.
 
 ## Fonctionnement
 
