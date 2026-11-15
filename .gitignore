@@ -1,0 +1,29 @@
+# Local medical, inventory, invoice, and backup data
+data/
+**/data/
+*.sqlite
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+*.db
+*.db-wal
+*.db-shm
+
+# Local certificate authority and private keys
+*.pem
+*.key
+*.p12
+*.pfx
+*.cer
+*.crt
+
+# Secrets and local environments
+.env
+.env.*
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.log
+.DS_Store
+Thumbs.db

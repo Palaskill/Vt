@@ -1,0 +1,172 @@
+VETSTOCK — GUIDE DE DÉMARRAGE
+Version de départ pour un cabinet vétérinaire en Tunisie
+
+1. AVANT DE COMMENCER
+
+VetStock est une application locale destinée à tourner sur un ordinateur Windows.
+Les téléphones et les autres ordinateurs du cabinet s’y connectent par le Wi-Fi
+local. Une fois installée, elle n’a pas besoin d’Internet pour les opérations
+de stock, les ventes et les commandes. Le PC doit rester allumé et le programme
+ouvert pendant l’utilisation.
+
+Il s’agit d’une première version à essayer avec des données fictives avant de
+l’utiliser dans le cabinet. Elle a été vérifiée dans un environnement Linux ;
+l’installation Windows et les téléphones réels doivent encore être vérifiés.
+Il ne s’agit pas d’un fichier .exe prêt à lancer sans installation : le code
+Python et des scripts de démarrage sont fournis.
+
+2. INSTALLATION SUR LE PC WINDOWS
+
+1) Téléchargez l’archive ZIP sur l’ordinateur du cabinet et extrayez tous ses
+   fichiers dans un dossier que vous contrôlez, par exemple Documents\VetStock.
+   Évitez les dossiers synchronisés automatiquement sur Internet si vous voulez
+   conserver les données uniquement au cabinet.
+2) Installez Python 3.10 ou plus récent depuis le site officiel :
+   https://www.python.org/downloads/windows/
+   Une connexion Internet est nécessaire pour ce téléchargement initial.
+   Le lanceur Windows « py » doit être disponible. Si une option pour l’ajouter
+   est proposée à l’installation, activez-la.
+3) Double-cliquez sur Configurer_HTTPS.bat. Ce script télécharge gratuitement le
+   module cryptography et crée des certificats et clés dans data\certs. Cela
+   nécessite Internet une seule fois. Il n’installe pas le certificat sur vos
+   appareils. Conservez le dossier et le message affiché avec l’empreinte du
+   certificat. Si l’installation échoue, consultez une personne technique.
+4) Sur le PC, ouvrez data\certs\CA-VetStock.cer, vérifiez l’empreinte SHA-256
+   affichée lors de la création, puis installez le certificat dans le magasin
+   « Autorités de certification racines de confiance » de l’utilisateur actuel.
+   Ne faites cela qu’avec le certificat créé par votre propre ordinateur.
+5) Double-cliquez sur Demarrer_VetStock.bat. Une fenêtre reste ouverte : ne la
+   fermez pas pendant le travail. Le navigateur du PC s’ouvre ; l’adresse locale
+   indiquée dans la fenêtre ressemble à https://localhost:8745.
+6) La première fois, créez le compte administrateur avec un mot de passe d’au
+   moins 10 caractères, unique et conservé en lieu sûr. Les autres comptes sont
+   créés ensuite depuis le menu Utilisateurs.
+
+Si Windows demande l’autorisation du pare-feu, n’autorisez l’accès que sur le
+réseau privé du cabinet. Ne publiez pas le port 8745 sur Internet. L’application
+refuse les adresses IP publiques, mais le réglage du pare-feu reste nécessaire
+pour limiter les accès sur le réseau local.
+
+Sans HTTPS, seul le navigateur de l’ordinateur lui-même peut utiliser l’app ;
+les autres appareils du Wi-Fi sont bloqués. Configurez HTTPS avant l’emploi de
+données réelles. Si le PC change d’adresse IP locale, relancez
+Configurer_HTTPS.bat, puis redémarrez VetStock. L’autorité de certificat déjà
+créée est conservée ; ne la supprimez pas à chaque changement d’adresse.
+
+3. ACCÈS DEPUIS UN TÉLÉPHONE
+
+1) Reliez le téléphone au même Wi-Fi privé que l’ordinateur.
+2) Copiez UNIQUEMENT le certificat public data\certs\CA-VetStock.cer sur ce
+   téléphone, par un moyen de confiance. Par exemple, il peut être envoyé à
+   votre propre adresse e-mail ; il ne contient pas la base de données. Vérifiez
+   son empreinte avant de l’approuver.
+3) Sur iPhone, ouvrez le certificat reçu et installez le profil proposé dans
+   Réglages. Puis allez dans Réglages > Général > Informations > Réglages des
+   certificats et activez la confiance pour le certificat VetStock vérifié.
+   Explications Apple :
+   https://support.apple.com/fr-fr/102400
+   https://support.apple.com/fr-fr/guide/deployment/depb5eff8914/web
+4) Ouvrez sur le téléphone l’adresse HTTPS affichée dans la fenêtre du PC,
+   par exemple https://192.168.1.20:8745. Utilisez l’adresse réellement affichée
+   par votre PC ; l’exemple n’est pas nécessairement la vôtre.
+5) Connectez-vous avec le compte personnel créé pour cet utilisateur.
+
+Les étapes Android et les autorisations de certificats dépendent du téléphone ;
+faites-vous accompagner si nécessaire. Le PC et les téléphones doivent pouvoir
+communiquer sur le réseau : certains Wi-Fi invités isolent les appareils.
+
+IMPORTANT : l’ajout d’une autorité racine donne une confiance large au
+certificat. Installez seulement celui généré par le PC du cabinet. Ne partagez
+jamais data\certs\ca-key.pem ni data\certs\server-key.pem. Protégez le PC et
+supprimez la confiance de vos appareils si la clé d’autorité est compromise.
+
+4. UTILISATION QUOTIDIENNE
+
+• Administrateur : créez les médicaments, leurs prix, leurs seuils et le délai
+  avant péremption. Créez les comptes, les fournisseurs et les paramètres du
+  cabinet. Activez les alertes pour les personnes souhaitées dans Utilisateurs.
+• Enregistrez chaque livraison avec son numéro de lot, sa date de péremption,
+  le nombre de boîtes fermées et, si nécessaire, les unités en vrac.
+• Pour une boîte de 20 comprimés, indiquez « 20 » comme contenu de boîte. Une
+  vente de 3 unités peut ouvrir une boîte et laisse les unités restantes ouvertes.
+• Une vente sélectionne automatiquement les lots non périmés qui expirent le
+  plus tôt. Vous pouvez choisir un autre lot non périmé dans le formulaire.
+  Les produits périmés ne sont pas comptés comme stock utilisable.
+• Si une vente est annulée par l’administrateur, le stock revient dans les lots.
+  Une boîte déjà ouverte reste ouverte. Un remboursement éventuel doit être
+  géré séparément : l’application n’effectue aucun remboursement automatique.
+• Les employés peuvent consulter le stock, vendre, enregistrer des paiements
+  et livraisons, préparer des commandes et imprimer les documents autorisés.
+• Dans Factures fournisseurs, l’administrateur peut conserver le montant, la
+  date d’échéance et une pièce jointe PDF, JPG ou PNG de 5 Mo au maximum. La
+  pièce jointe est enregistrée dans la base locale et incluse aux sauvegardes.
+
+5. ALERTES ET CODES-BARRES
+
+Les alertes de stock et de péremption s’affichent dans l’application pour les
+comptes choisis. Sur un navigateur compatible, l’utilisateur peut activer les
+notifications sur son appareil. Elles dépendent des autorisations et de la
+compatibilité du téléphone ; elles sont prévues lorsque l’application reste
+ouverte et active, et ne sont pas garanties lorsqu’elle est fermée ou que le
+téléphone est en veille. Les SMS et WhatsApp ne sont pas inclus dans cette
+version gratuite.
+
+Pour scanner, enregistrez d’abord le code-barres dans la fiche du médicament.
+Un lecteur USB qui se comporte comme un clavier peut remplir la recherche.
+La caméra nécessite HTTPS approuvé et une autorisation du navigateur. Le lecteur
+intégré prend en charge les codes EAN-13/EAN-8 courants, sous réserve de la
+qualité de l’image ; testez les emballages du cabinet avant utilisation réelle.
+La reconnaissance peut aussi dépendre du navigateur et de l’appareil.
+
+6. IMPORTER VOTRE FICHIER EXCEL OU CSV
+
+Depuis Médicaments > Importer Excel / CSV, téléchargez le modèle si nécessaire,
+choisissez votre fichier .xlsx ou .csv, puis vérifiez l’aperçu et l’association
+des colonnes avant d’importer. La première ligne doit contenir les titres.
+Les dates texte doivent être au format AAAA-MM-JJ, par exemple 2028-12-31.
+Si vous importez des quantités, fournissez aussi le numéro de lot et la date.
+
+Chaque ligne crée un médicament ; les doublons de code-barres sont refusés.
+Si un médicament possède plusieurs lots, importez-le une seule fois puis
+enregistrez ses autres lots comme livraisons. Si une ligne est invalide,
+l’import entier est annulé. Faites d’abord un essai sur un petit fichier.
+
+7. SAUVEGARDES ET RESTAURATION
+
+Les données sont dans data\vetstock.sqlite3. Dans Paramètres > Sauvegarde,
+indiquez un dossier EXISTANT sur une clé USB ou un disque externe, par exemple
+E:\Sauvegardes_VetStock, puis enregistrez. Le serveur essaie de créer une
+sauvegarde quotidienne lorsque l’ordinateur est allumé et le support branché.
+Un avertissement apparaît si aucune sauvegarde récente n’est enregistrée.
+Le bouton « Sauvegarder maintenant » et le téléchargement d’une copie sont aussi
+disponibles pour l’administrateur. Gardez régulièrement une copie débranchée.
+
+Les fichiers de base et de sauvegarde ne sont pas chiffrés par VetStock.
+Limitez l’accès au compte Windows et utilisez un support chiffré si possible.
+Les comptes de l’application ne protègent pas contre une personne qui peut
+lire directement les fichiers du PC ou de la clé USB.
+
+Pour tester la restauration, utilisez de préférence une copie du dossier de
+l’application : arrêtez d’abord complètement VetStock. Conservez une copie de
+l’ancien dossier data. Renommez l’ancienne base vetstock.sqlite3 et déplacez,
+s’ils existent, les anciens fichiers vetstock.sqlite3-wal et
+vetstock.sqlite3-shm avec elle, hors du dossier actif. Copiez la sauvegarde
+choisie dans data en la nommant vetstock.sqlite3, puis redémarrez et vérifiez
+les données. Ne remplacez jamais une base active sans sauvegarde préalable.
+La restauration ne s’effectue pas encore par un bouton dans l’application.
+
+8. FACTURATION ET LIMITES
+
+La TVA n’est pas calculée dans cette version car le régime et les taux n’ont
+pas encore été déterminés. Les documents de vente affichent « BROUILLON » :
+faites vérifier les mentions et la fiscalité par le comptable du cabinet avant
+toute utilisation comme facture fiscale. Pour obtenir un PDF, utilisez
+« Imprimer / PDF » puis « Enregistrer en PDF » dans la fenêtre du navigateur.
+
+Les prix sont saisis en dinars tunisiens, avec jusqu’à trois décimales. Les
+saisies et les calculs sont en millimes. Il n’y a pas d’envoi automatique de
+messages, de paiement bancaire intégré, ni de synchronisation hors cabinet.
+
+Le compte administrateur n’a pas de procédure automatique de récupération de
+mot de passe : conservez-le soigneusement. Toute migration, installation de
+certificat ou restauration peut être réalisée avec l’aide d’un technicien.
