@@ -159,6 +159,11 @@ class Handler(app.Handler):
                        '/app.js': ('app.js', 'text/javascript; charset=utf-8'),
                        '/barcode.js': ('barcode.js', 'text/javascript; charset=utf-8'),
                        '/styles.css': ('styles.css', 'text/css; charset=utf-8'),
+                       '/design.css': ('design.css', 'text/css; charset=utf-8'),
+                       '/design.js': ('design.js', 'text/javascript; charset=utf-8'),
+                       '/gsap.min.js': ('gsap.min.js', 'text/javascript; charset=utf-8'),
+                       '/lenis.min.js': ('lenis.min.js', 'text/javascript; charset=utf-8'),
+                       '/react-spotlight.js': ('react-spotlight.js', 'text/javascript; charset=utf-8'),
                        '/sw.js': ('sw.js', 'text/javascript; charset=utf-8'),
                        '/favicon.svg': ('favicon.svg', 'image/svg+xml')}
             if path not in allowed:

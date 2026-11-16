@@ -1,0 +1,16 @@
+{
+  "name": "vetstock-design-build",
+  "private": true,
+  "scripts": {
+    "build": "node build-spotlight.cjs"
+  },
+  "dependencies": {
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "terser": "^5.0.0",
+    "typescript": "5.9.3",
+    "webpack": "5.98.0"
+  }
+}

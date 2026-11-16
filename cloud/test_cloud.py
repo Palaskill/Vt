@@ -130,6 +130,24 @@ class CloudHTTPTests(unittest.TestCase):
             self.assertEqual(c.execute('SELECT attempts FROM login_attempts WHERE username_hash=?',
                                        (cloud.token_hash('absent'),)).fetchone()[0], 12)
 
+    def test_design_assets_are_served_by_cloud(self):
+        connection = http.client.HTTPConnection(self.host, timeout=10)
+        try:
+            connection.request('GET', '/', headers={'Host': self.host})
+            response = connection.getresponse()
+            page = response.read()
+            self.assertEqual(response.status, 200)
+            self.assertIn("script-src 'self'", response.getheader('Content-Security-Policy'))
+            for name in ('design.css', 'design.js', 'gsap.min.js', 'lenis.min.js', 'react-spotlight.js'):
+                with self.subTest(asset=name):
+                    self.assertIn(('/' + name).encode(), page)
+                    connection.request('GET', '/' + name, headers={'Host': self.host})
+                    asset = connection.getresponse()
+                    self.assertEqual(asset.status, 200)
+                    self.assertGreater(len(asset.read()), 100)
+        finally:
+            connection.close()
+
 
 if __name__ == '__main__':
     unittest.main()
